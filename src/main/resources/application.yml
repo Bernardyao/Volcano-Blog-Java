@@ -1,0 +1,216 @@
+# ========================================
+# Volcano Blog 应用配置
+# ========================================
+# 使用环境变量配置，请创建 .env 文件
+# 或通过命令行设置环境变量
+# ========================================
+
+# ========================================
+# 通用配置（所有环境共用）
+# ========================================
+server:
+  port: ${PORT:3001}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+  error:
+    include-message: always
+
+spring:
+  # 默认激活的环境配置
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  
+  application:
+    name: volcano-blog
+  
+  # 数据源配置
+  datasource:
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/volcano_blog?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: VolcanoBlogHikariCP
+  
+  # JPA/Hibernate 配置
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        use_sql_comments: true
+    open-in-view: false
+
+  # Flyway 数据库迁移配置
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+# JWT 认证配置
+jwt:
+  secret: ${JWT_SECRET:}  # 必须设置！使用 openssl rand -base64 32 生成
+  expiration: ${JWT_EXPIRES_IN_MS:604800000}  # 默认 7 天
+
+# CORS 跨域配置
+cors:
+  allowed-origins: ${CORS_ORIGIN:http://localhost:5173}
+
+# 日志配置
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/volcano-blog.log
+
+# Actuator 监控端点
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# SpringDoc OpenAPI 配置
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+---
+# ========================================
+# 开发环境配置
+# ========================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    root: INFO
+    com.volcano.blog: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  file:
+    max-size: 10MB
+    max-history: 30
+    total-size-cap: 500MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  show-actuator: true
+
+---
+# ========================================
+# 生产环境配置
+# ========================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+jwt:
+  expiration: ${JWT_EXPIRES_IN_MS:86400000}  # 生产环境：24小时
+
+logging:
+  level:
+    root: WARN
+    com.volcano.blog: INFO
+    org.springframework.security: WARN
+  file:
+    max-size: 50MB
+    max-history: 90
+    total-size-cap: 5GB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+---
+# ========================================
+# 测试环境配置
+# ========================================
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  
+  flyway:
+    enabled: false
+  
+  h2:
+    console:
+      enabled: false
+
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LWZvci1qd3QtdGVzdGluZy1taW5pbXVtLTMyLWNoYXJz
+  expiration: 604800000
+
+logging:
+  level:
+    root: ERROR
+    com.volcano.blog: INFO
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
