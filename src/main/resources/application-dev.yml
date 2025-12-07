@@ -1,0 +1,61 @@
+# ========================================
+# Volcano Blog - 开发环境配置
+# ========================================
+
+spring:
+  # 数据源配置（开发环境默认值）
+  datasource:
+    password: ${DATABASE_PASSWORD:123456}
+    hikari:
+      maximum-pool-size: 5
+      leak-detection-threshold: 30000
+
+  # JPA 配置
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+
+# JWT 配置（开发环境 7 天有效期）
+jwt:
+  expiration: 604800000
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.volcano.blog: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  file:
+    max-size: 10MB
+    max-history: 30
+    total-size-cap: 500MB
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,configprops
+  endpoint:
+    health:
+      show-details: always
+
+# SpringDoc 配置
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    display-operation-id: true
+  show-actuator: true
+  api-docs:
+    enabled: true

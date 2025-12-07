@@ -1,0 +1,58 @@
+# ========================================
+# Volcano Blog - 测试环境配置
+# ========================================
+
+spring:
+  # 使用 H2 内存数据库
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    hikari:
+      maximum-pool-size: 5
+  
+  # JPA 配置
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  
+  # 禁用 Flyway（测试环境使用 Hibernate 自动建表）
+  flyway:
+    enabled: false
+  
+  # H2 控制台
+  h2:
+    console:
+      enabled: false
+
+# JWT 配置（测试环境使用固定密钥）
+jwt:
+  secret: dGVzdC1zZWNyZXQta2V5LWZvci1qd3QtdGVzdGluZy1taW5pbXVtLTMyLWNoYXJz
+  expiration: 604800000
+
+# 日志配置（最小化输出）
+logging:
+  level:
+    root: ERROR
+    com.volcano.blog: INFO
+    org.springframework: ERROR
+    org.hibernate: ERROR
+
+# Actuator 配置（测试环境禁用）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: none
+
+# SpringDoc 配置（测试环境禁用）
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false

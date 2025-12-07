@@ -274,19 +274,13 @@ for ($i=1; $i -le 10; $i++) {
 5. ✅ 配置防火墙限制数据库访问
 6. ✅ 启用 HTTPS 强制跳转
 
-### 📋 待实施的安全改进
+### 🔧 待实施的安全改进
 
-查看完整的安全修复计划：
-- 📄 [安全审计报告](../docs/SECURITY-AUDIT-REPORT.md) - 11 个已识别问题
-- ✅ [安全修复清单](../docs/SECURITY-FIX-CHECKLIST.md) - 详细修复步骤
-
-**当前进度**: 2/11 (18%) - 高优先级问题已解决 ✅
-
-**下一步**:
+**高优先级**:
 - 🟡 JWT Refresh Token 机制
-- 🟡 CORS 配置优化
-- 🟡 JWT 令牌黑名单
-- 🟡 生产环境 HTTPS 配置
+- 🟡 JWT 令牌黑名单（用于登出）
+- 🟡 CORS 配置细粒度控制
+- 🟡 生产环境 HTTPS 强制
 
 ## 开发指南
 
@@ -350,8 +344,27 @@ mvn test jacoco:report
 
 ## 部署
 
-请参考项目文档中的详细部署指南：
-- [Ubuntu 服务器部署教程](../docs/java-code-walkthrough/06-ubuntu-deployment-guide.md)
+生产环境部署清单：
+
+1. **环境变量配置**
+   ```bash
+   export SPRING_PROFILES_ACTIVE=prod
+   export JWT_SECRET=$(openssl rand -base64 32)
+   export DATABASE_HOST=your_mysql_host
+   export DATABASE_PASSWORD=your_secure_password
+   ```
+
+2. **构建应用**
+   ```bash
+   mvn clean package -DskipTests
+   ```
+
+3. **运行应用**
+   ```bash
+   java -jar target/volcano-backend-java-0.0.1-SNAPSHOT.jar
+   ```
+
+详细部署说明请参考：[本地部署指南](docs/LOCAL-DEPLOYMENT.md)
 
 ## 故障排查
 
@@ -377,25 +390,21 @@ mvn test jacoco:report
 
 ## 更多文档
 
-- 📖 [项目完整性评估报告](../docs/java-code-walkthrough/09-project-completeness-report.md)
-- 📝 [版本更新日志](../docs/CHANGELOG.md)
-- 🚀 [快速参考指南](../docs/QUICK-REFERENCE.md)
-- 🔧 [代码结构详解](../docs/java-code-walkthrough/00-introduction.md)
-- 🔒 [安全机制说明](../docs/java-code-walkthrough/05-security.md)
+- 📄 [API 完整文档](docs/API-DOCUMENTATION.md) - RESTful API 详细说明
+- 📋 [配置最佳实践](docs/CONFIGURATION-BEST-PRACTICES.md) - 配置文件管理指南
+- 🚀 [本地部署指南](docs/LOCAL-DEPLOYMENT.md) - 本地开发环境搭建
 
 ## 版本信息
 
 **当前版本**: v3.0  
-**发布日期**: 2025-11-30  
+**发布日期**: 2025-12-07  
 **更新内容**:
-- ✅ 新增用户注册功能（密码强度验证、邮箱唯一性检查）
-- ✅ 新增获取当前用户信息 API (`/api/auth/me`)
-- ✅ 新增完整的文章 CRUD 功能
+- ✅ 修复 103 个编译错误（AppProperties.java 语法问题）
+- ✅ 优化代码质量（删除未使用的导入，替换已弃用的 API）
+- ✅ 清理冗余配置文档
+- ✅ 完善用户注册和文章管理功能
 - ✅ 集成 Flyway 数据库版本控制
-- ✅ 新增 38 个测试用例（90% 覆盖率）
-- ✅ 增强的异常处理（BusinessException 支持错误码）
-
-查看完整更新日志：[CHANGELOG.md](../docs/CHANGELOG.md)
+- ✅ 测试覆盖率 90%（38 个测试用例）
 
 ## 许可证
 

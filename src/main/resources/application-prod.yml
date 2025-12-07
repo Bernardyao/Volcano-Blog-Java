@@ -1,0 +1,62 @@
+# ========================================
+# Volcano Blog - 生产环境配置
+# ========================================
+
+spring:
+  # 数据源配置（生产环境必须通过环境变量设置）
+  datasource:
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:10}
+      leak-detection-threshold: 120000
+
+  # JPA 配置（关闭调试输出）
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        generate_statistics: false
+
+# JWT 配置（生产环境 24 小时有效期）
+jwt:
+  expiration: ${JWT_EXPIRATION_MS:86400000}
+
+# 日志配置（生产环境）
+logging:
+  level:
+    root: WARN
+    com.volcano.blog: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate: WARN
+  file:
+    max-size: 50MB
+    max-history: 90
+    total-size-cap: 5GB
+
+# Actuator 配置（限制暴露端点）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+# SpringDoc 配置（生产环境关闭 Swagger）
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+# 服务器配置
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-exception: false
+    include-stacktrace: never

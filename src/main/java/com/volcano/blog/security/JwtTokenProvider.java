@@ -92,7 +92,7 @@ public class JwtTokenProvider {
         } catch (MalformedJwtException e) {
             log.error("JWT token is malformed: {}", e.getMessage());
             throw e;
-        } catch (SignatureException e) {
+        } catch (io.jsonwebtoken.security.SignatureException e) {
             log.error("JWT signature validation failed: {}", e.getMessage());
             throw e;
         } catch (IllegalArgumentException e) {
